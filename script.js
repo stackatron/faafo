@@ -193,62 +193,25 @@ class TypeShuffle {
   /**
    * Effect 1 - clear cells and animate each line cells (delays per line and per cell)
    */
+  
   fx1() {
-    // max iterations for each cell to change the current value
-    const MAX_CELL_ITERATIONS = 45;
-
-    let finished = 0;
-
-    // clear all cells values
-    this.clearCells();
-
-    // cell's loop animation
-    // each cell will change its value MAX_CELL_ITERATIONS times
-    const loop = (line, cell, iteration = 0) => {
-      // cache the previous value
-      cell.cache = cell.state;
-
-      // set back the original cell value if at the last iteration
-      if (iteration === MAX_CELL_ITERATIONS - 1) {
-        cell.set(cell.original);
-        ++finished;
-        if (finished === this.totalChars) {
-          this.isAnimating = false;
-        }
-      }
-      // if the cell is the first one in its line then generate a random char
-      else if (cell.position === 0) {
-        // show specific characters for the first 9 iterations (looks cooler)
-        cell.set(
-          iteration < 9
-            ? ["*", "-", "\u0027", "\u0022"][Math.floor(Math.random() * 4)]
-            : this.getRandomChar()
-        );
-      }
-      // get the cached value of the previous cell.
-      // This will result in the illusion that the chars are sliding from left to right
-      else {
-        cell.set(line.cells[cell.previousCellPosition].cache);
-      }
-
-      // doesn't count if it's an empty space
-      if (cell.cache != "&nbsp;") {
-        ++iteration;
-      }
-
-      // repeat...
-      if (iteration < MAX_CELL_ITERATIONS) {
-        setTimeout(() => loop(line, cell, iteration), 15);
-      }
-    };
-
-    // set delays for each cell animation
-    for (const line of this.lines) {
-      for (const cell of line.cells) {
-        setTimeout(() => loop(line, cell), (line.position + 1) * 200);
-      }
-    }
+  // Animation effect implementation...
+  // Before setting the cell value, try adding a condition to check if it's a Chinese character
+  if (this.isChinese(cell.state)) {
+    // If it's a Chinese character, set its value without any modification
+    cell.set(cell.original);
+  } else {
+    // If it's not a Chinese character, proceed with the animation effect
+    // For example:
+    cell.set(this.getRandomChar());
   }
+}
+
+// Add a helper method to check if a character is Chinese
+isChinese(char) {
+  // Check if the character falls within the Unicode range for Chinese characters
+  return /^[\u4E00-\u9FFF]$/.test(char);
+}
   fx2() {
     const MAX_CELL_ITERATIONS = 20;
     let finished = 0;
